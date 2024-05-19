@@ -22,7 +22,7 @@ function  App(){
   const [data,setData] = useState<employeData[]|any>([]);
   const [num,setNum] = useState({open:false,curNum:-1});
   const [analysis,setAnalysis] = useState<Analysis[]|any>([]);
-  const [order, setOrder] = useState("ASC");
+  const [order, setOrder] = useState("DESC");
 
   var options = {
     options: {
@@ -97,15 +97,17 @@ function  App(){
   }
 
   useEffect(()=>{
-    axios.get("http://localhost:7777/getData").then((e)=>setData(e.data.data));
+    axios.get("https://floque-assignment-server.vercel.app/getData").then((e)=>setData(e.data.data));
   },[])
   async function getAnalysis(year:any){
     setAnalysis([]);
-    await axios.get("http://localhost:7777/getAnalysis",{params:{year:year}}).then((e)=>setAnalysis(e.data.data))
+    await axios.get("https://floque-assignment-server.vercel.app/getAnalysis",{params:{year:year}}).then((e)=>setAnalysis(e.data.data))
   }
   return (
     <>
       <Container size={'4'} m={{initial:'4',md:'7',lg:'8'}}>
+      <Heading size={'7'} align={'center'} mb={'5'}>Floquer - Technical Assignment</Heading>
+
         <Heading size={'7'} >Main Table</Heading>
         <Table.Root m={{initial:'4',md:'7',lg:'8'}} size={'3'} variant={'surface'} layout={'auto'}>
           <Table.Header>

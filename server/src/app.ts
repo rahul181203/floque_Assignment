@@ -18,9 +18,6 @@ app.get("/getData",async(req:Request,res:Response)=>{
         by:['work_year'],
         _count:true,
         _avg:{salary_in_usd:true},
-        orderBy:{
-            work_year:"asc"
-        }
     })
     res.status(200).json({data});
 })
@@ -33,9 +30,6 @@ app.get("/getAnalysis",async(req:Request,res:Response)=>{
         },
         by:['job_title'],
         _count:true,
-        orderBy:{
-            job_title:"asc"
-        }
     })
     // console.log(req);
     res.status(200).json({data});
