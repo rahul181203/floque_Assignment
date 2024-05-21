@@ -1,37 +1,25 @@
-import { Container, Heading, Table } from '@radix-ui/themes';
+import { Button, Container, Flex, Heading, Spinner, Table, TextArea,Text } from '@radix-ui/themes';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Chart from "react-apexcharts";
-
-interface employeData {
-  _count:    number;
-  _avg:      Avg;
-  work_year: number;
-}
-
-interface Avg{
-  salary_in_usd:number
-}
-
-interface Analysis {
-  _count:    number;
-  job_title: string;
-}
+import {employeData,Analysis} from "./models/dataModels"
 
 function  App(){
   const [data,setData] = useState<employeData[]|any>([]);
   const [num,setNum] = useState({open:false,curNum:-1});
   const [analysis,setAnalysis] = useState<Analysis[]|any>([]);
   const [order, setOrder] = useState("DESC");
+  const [response,setResponse] = useState("");
+  const [question,setQuestion] = useState("");
 
-  var options = {
+  var chart = {
     options: {
       title:{
         text:"Number of Jobs in a year",
-        align:'center',
         style:{
           fontSize:"20px"
-        }
+        },
+        align:"center",
       },
       chart: {
         background:"rgb(229, 231, 235)",
@@ -59,7 +47,7 @@ function  App(){
         title:{text:"Number of Jobs",style:{
           fontSize:"16px"
         }},
-      }
+      },
     },
     series: [
       {
@@ -68,7 +56,6 @@ function  App(){
       }
     ]
   }
-
 
   const sorting=(col:any)=>{
     if(order === "ASC"){
@@ -99,10 +86,16 @@ function  App(){
   useEffect(()=>{
     axios.get("https://floque-assignment-server.vercel.app/getData").then((e)=>setData(e.data.data));
   },[])
+
   async function getAnalysis(year:any){
     setAnalysis([]);
     await axios.get("https://floque-assignment-server.vercel.app/getAnalysis",{params:{year:year}}).then((e)=>setAnalysis(e.data.data))
   }
+
+  async function getResponse(question:string){
+    await axios.post("http://localhost:7777/getQuery",{question}).then((e)=>{setQuestion("");setResponse(e.data.response)})
+  }
+  
   return (
     <>
       <Container size={'4'} m={{initial:'4',md:'7',lg:'8'}}>
@@ -118,6 +111,7 @@ function  App(){
             </Table.Row>
             </Table.Header>
             <Table.Body>
+              
                 {
                   data.map((e:employeData,i:number)=>{
                     return (
@@ -132,7 +126,8 @@ function  App(){
                         (i===num.curNum && num.open)&&
                         <>
                         <Table.RowHeaderCell></Table.RowHeaderCell>
-                          <Table.Root size={'2'} className=' w-full' variant='surface' layout={'auto'}>
+                        <Table.Cell>
+                          <Table.Root my={'3'} size={'2'} className=' w-full' variant='surface' layout={'auto'}>
                             <Table.Header>
                               <Table.Row>
                                 <Table.ColumnHeaderCell onClick={()=>sortingAnalysis("job_title")} className='cursor-pointer' >Title of Job</Table.ColumnHeaderCell>
@@ -154,6 +149,11 @@ function  App(){
                               }
                             </Table.Body>
                           </Table.Root>
+                          {
+                            (analysis.length === 0) && <Flex justify={'center'} align={'center'}><Spinner size={'3'} /></Flex>
+                          }
+                          </Table.Cell>
+                          <Table.Cell></Table.Cell>
                         </>
                       }
                       </Table.Row>
@@ -163,8 +163,15 @@ function  App(){
                 }
             </Table.Body>
         </Table.Root>
+              {
+                (data.length === 0) && <Flex justify={'center'} align={'center'}><Spinner size={'3'} /></Flex>
+              }
         <Heading size={'7'} m={'4'}>Chart</Heading>
-        <Chart options={options.options} series={options.series} type='line' height={'500'} ></Chart>
+        <Chart options={chart.options} series={chart.series} type='line' height={'500'} ></Chart>
+        <Heading size={'7'} my={'4'}>Chat Bot</Heading>
+        <TextArea placeholder='Enter the Query...' value={question} onChange={(e)=>setQuestion(e.target.value)} m={'4'}></TextArea>
+        <Button m={'3'} onClick={(f)=>getResponse(question)}>Get Response</Button>
+        <Text as='p' m={'3'} >{response}</Text>
       </Container>
     </>
   );

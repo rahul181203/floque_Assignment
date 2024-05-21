@@ -2,6 +2,7 @@ import express,{Express,Request,Response} from "express";
 import dotenv from "dotenv";
 import cors from "cors"
 import { PrismaClient } from "@prisma/client";
+import { CheckLLM } from "./llm";
 const prisma = new PrismaClient();
 
 const app:Express = express();
@@ -33,6 +34,12 @@ app.get("/getAnalysis",async(req:Request,res:Response)=>{
     })
     // console.log(req);
     res.status(200).json({data});
+})
+
+app.post("/getQuery",async(req:Request,res:Response)=>{
+    const question = req.body.question
+    const getResponse = await CheckLLM(question);
+    res.status(200).json({response:getResponse});
 })
 
 export default app;
