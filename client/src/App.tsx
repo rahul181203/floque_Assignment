@@ -93,7 +93,7 @@ function  App(){
   }
 
   async function getResponse(question:string){
-    await axios.post("http://localhost:7777/getQuery",{question}).then((e)=>{setQuestion("");setResponse(e.data.response)})
+    await axios.post("https://floque-assignment-server.vercel.app/getQuery",{question}).then((e)=>{setQuestion("");setResponse(e.data.response)})
   }
   
   return (
