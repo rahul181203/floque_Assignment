@@ -6,7 +6,7 @@ import { OpenAIEmbeddings } from "@langchain/openai";
 import { HNSWLib } from "@langchain/community/vectorstores/hnswlib";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import {Document} from "langchain/document";
-import { Http2ServerResponse } from "http2";
+import "fs"
 
 
 dot.config();
@@ -43,10 +43,14 @@ const askModel=async(question:String,csvContents:any)=>{
 }
 
 export const CheckLLM=async(question:string)=>{
-    const loader = new CSVLoader("../docs/salaries.csv")
-    const docs = await loader.load()
-    // console.log(docs);
-    const csvcontent = docs.map((doc:Document)=>doc.pageContent)
-    // console.log(csvcontent);
-    return askModel(question,csvcontent);
+    try{
+        const loader = new CSVLoader("./salaries.csv")
+        const docs = await loader.load()
+        // console.log(docs);
+        const csvcontent = docs.map((doc:Document)=>doc.pageContent)
+        // console.log(csvcontent);
+        return askModel(question,csvcontent);
+    }catch(e){
+        return String(e);
+    }
 }
