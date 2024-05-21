@@ -43,7 +43,7 @@ const askModel=async(question:String,csvContents:any)=>{
 }
 
 export const CheckLLM=async(question:string)=>{
-    const loader = new CSVLoader("/Users/rahul/LOCAL DISK/assignment/floquer/server/docs/salaries.csv")
+    const loader = new CSVLoader("../docs/salaries.csv")
     const docs = await loader.load()
     // console.log(docs);
     const csvcontent = docs.map((doc:Document)=>doc.pageContent)
